@@ -1,0 +1,6 @@
+有効	タイトル	URL	300エラー	正常メール	メールアドレス	監視方式	ログインURL	Basic認証ID	ログイン認証ID	確認文字列	ユーザー名セレクタ	パスワードセレクタ	送信ボタンセレクタ
+yes	自社ホームページ	https://tomomori.net/	no	no	admin@example.com,user@example.com	requests				ホーム
+yes	リダイレクト確認用	http://tomomori.net/	yes	no	admin@example.com,user@example.com	requests				ホーム
+yes	Basic認証ページ	https://tomomori.net/basic/	no	no	admin@example.com,user@example.com	basic		BASIC_SAMPLE		"ok"
+yes	ログイン後ページ	https://demo.thermometer.tomomori.net/sensor_data	no	no	admin@example.com,user@example.com	playwright	https://demo.thermometer.tomomori.net/accounts/login/?next=/sensor_data		APP	センサーデータ	"input[name='login']"	"input[name='password']"	"button[type='submit']"
+no	Basic認証後ログインページ	https://example.com/secure/dashboard/	no	no	admin@example.com,user@example.com	playwright	https://example.com/secure/login/	BASIC_SAMPLE	DJANGO_ADMIN	ダッシュボード	input[name='username']	input[name='password']	button[type='submit']
