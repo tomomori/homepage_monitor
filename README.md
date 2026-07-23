@@ -25,7 +25,7 @@
 
 ## ソースコード
 
-https://github.com/tomomori/homepage_monitor.git
+[https://github.com/tomomori/homepage_monitor.git](https://github.com/tomomori/homepage_monitor.git)
 
 
 ## ファイル構成
