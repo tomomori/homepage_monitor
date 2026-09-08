@@ -241,6 +241,7 @@ def main(argv: list[str] | None = None) -> int:
             urls_file=Path(urls_file),
             log_dir=config.log_dir,
             timeout=config.timeout,
+            playwright_text_timeout=config.playwright_text_timeout,
             retry_count=config.retry_count,
             retry_wait_seconds=config.retry_wait_seconds,
             max_workers=config.max_workers,

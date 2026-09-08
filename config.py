@@ -45,7 +45,9 @@ class AppConfig:
     log_dir : Path
         CSVログの出力先ディレクトリ。
     timeout : int
-        HTTPアクセスのタイムアウト秒数。
+        HTTPアクセスとPlaywright画面操作のタイムアウト秒数。
+    playwright_text_timeout : int
+        Playwright方式で確認文字列が表示されるまで待つ秒数。
     retry_count : int
         異常時のリトライ回数。2なら「初回 + 2回リトライ」。
     retry_wait_seconds : int
@@ -87,6 +89,7 @@ class AppConfig:
     mail_from: str
     summary_mail_enabled: bool
     summary_mail_addrs: list[str]
+    playwright_text_timeout: int = 3
 
 
 def _get_str(name: str, default: str = "") -> str:
@@ -199,6 +202,7 @@ def load_config(env_file: str | Path = ".env") -> AppConfig:
         urls_file=Path(_get_str("URLS_FILE", "urls.tsv")),
         log_dir=Path(_get_str("LOG_DIR", "logs")),
         timeout=_get_int("TIMEOUT", 15),
+        playwright_text_timeout=_get_int("PLAYWRIGHT_TEXT_TIMEOUT", 3),
         retry_count=_get_int("RETRY_COUNT", 1),
         retry_wait_seconds=_get_int("RETRY_WAIT_SECONDS", 3),
         max_workers=_get_int("MAX_WORKERS", 5),

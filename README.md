@@ -94,6 +94,7 @@ Copy-Item urls.example.tsv urls.tsv
 URLS_FILE=urls.tsv
 LOG_DIR=logs
 TIMEOUT=15
+PLAYWRIGHT_TEXT_TIMEOUT=3
 RETRY_COUNT=1
 RETRY_WAIT_SECONDS=3
 MAX_WORKERS=5
@@ -204,7 +205,18 @@ DJANGO_ADMIN_PASSWORD=admin_password
 3. `input[name='password']` にパスワードを入力
 4. `button[type='submit']` をクリック
 5. `https://example.com/dashboard/` を開く
-6. 画面内に `ダッシュボード` が含まれているか確認
+6. 画面内に `ダッシュボード` が表示されるまで最大 `PLAYWRIGHT_TEXT_TIMEOUT` 秒待つ
+
+Playwright方式では、Vue.jsなどによる非同期描画に対応するため、同じログイン済みページ上で確認文字列の表示を繰り返し確認します。文字列が見つかった時点で待機を終了します。
+
+```ini
+TIMEOUT=15
+PLAYWRIGHT_TEXT_TIMEOUT=3
+```
+
+`TIMEOUT` はHTTPアクセスとPlaywrightの画面操作の上限時間です。`PLAYWRIGHT_TEXT_TIMEOUT` は、確認文字列が表示されるまでの専用待機時間です。いずれも単位は秒です。
+
+`PLAYWRIGHT_TEXT_TIMEOUT` 秒経過しても文字列が見つからない場合は `TEXT_NOT_FOUND` とします。この場合は `RETRY_COUNT` の対象外とし、ブラウザ起動・ログインからの再実行は行いません。通信エラーやブラウザ操作のタイムアウトは、従来どおり `RETRY_COUNT` に従って再試行します。
 
 Basic認証で保護されたページの先にアプリログイン画面がある場合は、`Basic認証ID` も指定します。
 

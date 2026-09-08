@@ -212,6 +212,11 @@ class HomepageChecker:
 
             last_result = result
 
+            # Playwrightでは同じページ上で確認文字列の表示を待っています。
+            # 見つからなかった場合は、ブラウザ起動・ログインからの再実行はしません。
+            if setting.monitor_type == "playwright" and result.result_type == "TEXT_NOT_FOUND":
+                return result
+
             if attempt < self.config.retry_count:
                 time.sleep(self.config.retry_wait_seconds)
 
@@ -390,7 +395,20 @@ class HomepageChecker:
                 target_response = page.goto(setting.url, wait_until="networkidle")
                 status_code = target_response.status if target_response else None
 
-                body_text = page.locator("body").inner_text(timeout=self.config.timeout * 1000)
+                text_found = True
+                status_ok = status_code is None or self._is_status_ok(status_code, setting)
+                if status_ok and setting.check_text:
+                    try:
+                        # Vue.jsなどが非同期で文字列をDOMに挿入する場合に備え、
+                        # 同じログイン済みページ上で表示を繰り返し確認します。
+                        page.wait_for_function(
+                            "(text) => document.body && document.body.innerText.includes(text)",
+                            arg=setting.check_text,
+                            timeout=self.config.playwright_text_timeout * 1000,
+                        )
+                    except PlaywrightTimeoutError:
+                        text_found = False
+
                 elapsed_ms = int((time.perf_counter() - start_time) * 1000)
                 context.close()
                 browser.close()
@@ -401,7 +419,7 @@ class HomepageChecker:
                         f"HTTPステータスが異常です: {status_code}", elapsed_ms, attempt_no,
                     )
 
-                if setting.check_text and setting.check_text not in body_text:
+                if not text_found:
                     return self._build_plain_result(
                         setting, checked_at, False, status_code, "TEXT_NOT_FOUND",
                         f"確認文字列が見つかりません: {setting.check_text}", elapsed_ms, attempt_no,
